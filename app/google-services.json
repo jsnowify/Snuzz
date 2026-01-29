@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "562174036495",
+    "project_id": "snuzznoise",
+    "storage_bucket": "snuzznoise.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:562174036495:android:8234382b47d414598d317a",
+        "android_client_info": {
+          "package_name": "com.snowi.snuzznoise"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7mdsZl9c_xshYduqLDLACSg2EAzYWgSo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
