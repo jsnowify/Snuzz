@@ -1,4 +1,4 @@
-# 🤫 SnuzzNoise — Smart AI Noise Monitor
+# SNUZZ: ANDROID-BASED OFFICE’S NOISE DETECTION APPLICATION.
 
 **SnuzzNoise** is not just a decibel meter — it’s a **context-aware noise guardian** designed for classrooms, offices, and libraries.
 
@@ -79,3 +79,4 @@ At the core of SnuzzNoise is an intelligent decision engine that processes audio
 
 ```bash
 git clone https://github.com/jsnowify/Snuzz.git
+
