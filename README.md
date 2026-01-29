@@ -1,8 +1,8 @@
 # SNUZZ: ANDROID-BASED OFFICE’S NOISE DETECTION APPLICATION.
 
-**SnuzzNoise** is not just a decibel meter — it’s a **context-aware noise guardian** designed for classrooms, offices, and libraries.
+**Snuzz** is not just a decibel meter — it’s a **context-aware noise guardian** designed for classrooms, offices, and libraries.
 
-Unlike standard noise-monitoring apps that trigger alerts purely based on volume, SnuzzNoise uses an embedded **TensorFlow Lite (YAMNet)** model to understand **what** the sound is.  
+Unlike standard noise-monitoring apps that trigger alerts purely based on volume, Snuzz uses an embedded **TensorFlow Lite (YAMNet)** model to understand **what** the sound is.  
 It ignores safe noises (like air conditioners or typing) but instantly alerts you to **critical events** (such as screaming or glass breaking), even when the volume is lower than the set threshold.
 
 ---
@@ -79,4 +79,5 @@ At the core of SnuzzNoise is an intelligent decision engine that processes audio
 
 ```bash
 git clone https://github.com/jsnowify/Snuzz.git
+
 
