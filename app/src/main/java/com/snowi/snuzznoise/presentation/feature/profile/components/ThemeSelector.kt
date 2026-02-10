@@ -24,8 +24,8 @@ fun ThemeSelector(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly
+            .padding(16.dp), // Standard padding
+        horizontalArrangement = Arrangement.SpaceBetween // Spread items evenly
     ) {
         AppTheme.entries.forEach { theme ->
             ThemeOption(

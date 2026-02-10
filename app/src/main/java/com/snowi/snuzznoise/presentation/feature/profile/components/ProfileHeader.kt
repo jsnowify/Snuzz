@@ -1,5 +1,6 @@
 package com.snowi.snuzznoise.presentation.feature.profile.components
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -13,36 +14,35 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.snowi.snuzznoise.R
 
 @Composable
-fun ProfileHeader(avatar: Painter, email: String) {
-    val configuration = LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp.dp
-
-    // CONSISTENT TYPOGRAPHY STANDARD
-    val (titleStyle, avatarSize) = if (screenWidth < 360.dp) {
-        MaterialTheme.typography.headlineMedium to 40.dp
-    } else {
-        MaterialTheme.typography.headlineLarge to 56.dp // Standardized size
-    }
-
+fun ProfileHeader(
+    photoUrl: Uri?,       // Changed from Painter to Uri?
+    name: String,
+    email: String,
+    onClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 16.dp, bottom = 8.dp),
+            .clickable(onClick = onClick)
+            .padding(vertical = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = "Profile",
-                style = titleStyle,
+                text = name,
+                style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground
             )
@@ -53,18 +53,36 @@ fun ProfileHeader(avatar: Painter, email: String) {
             )
         }
         Spacer(modifier = Modifier.width(16.dp))
-        Image(
-            painter = avatar,
-            contentDescription = "User Avatar",
-            modifier = Modifier
-                .size(avatarSize)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop
-        )
+
+        // Logic: Load URL if available, else show default local avatar
+        if (photoUrl != null) {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(photoUrl)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = "User Avatar",
+                placeholder = painterResource(R.drawable.avatar),
+                error = painterResource(R.drawable.avatar),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(56.dp)
+                    .clip(CircleShape)
+            )
+        } else {
+            Image(
+                painter = painterResource(id = R.drawable.avatar),
+                contentDescription = "Guest Avatar",
+                modifier = Modifier
+                    .size(56.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
+            )
+        }
     }
 }
 
-// ... (Keep SettingsSection, SettingsItem, NotificationSettingsItem below as they were)
+// ... (Rest of your settings components remain exactly the same)
 @Composable
 fun SettingsSection(title: String, content: @Composable ColumnScope.() -> Unit) {
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -78,7 +96,7 @@ fun SettingsSection(title: String, content: @Composable ColumnScope.() -> Unit) 
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
         ) {
             Column(content = content)
         }

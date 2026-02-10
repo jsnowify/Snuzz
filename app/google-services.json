@@ -12,7 +12,20 @@
           "package_name": "com.snowi.snuzznoise"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "562174036495-7fdqbp5vue2f599vshss53pnnencd100.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.snowi.snuzznoise",
+            "certificate_hash": "17d05263638f3cd92c0d434ea38471bb6f2d0dfa"
+          }
+        },
+        {
+          "client_id": "562174036495-ahn9g2jh50k8q8gcb45navehksal3vrn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyC7mdsZl9c_xshYduqLDLACSg2EAzYWgSo"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "562174036495-ahn9g2jh50k8q8gcb45navehksal3vrn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

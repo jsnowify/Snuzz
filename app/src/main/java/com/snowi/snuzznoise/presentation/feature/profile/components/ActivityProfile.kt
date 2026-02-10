@@ -33,7 +33,6 @@ val iconMap = mapOf(
     "Deep Work" to Icons.Default.Visibility,
     "Study" to Icons.Default.School,
     "Library" to Icons.Default.LocalLibrary,
-    // FIX: Updated to AutoMirrored
     "Reading" to Icons.AutoMirrored.Filled.MenuBook,
     "Research" to Icons.Default.Search,
     "Writing" to Icons.Default.Edit,
@@ -53,7 +52,6 @@ val iconMap = mapOf(
     "Cooking" to Icons.Default.Restaurant,
     "Exercise" to Icons.Default.FitnessCenter,
     "Commute" to Icons.Default.DirectionsCar,
-    // FIX: Updated to AutoMirrored
     "Walking" to Icons.AutoMirrored.Filled.DirectionsWalk,
     "Shopping" to Icons.Default.ShoppingCart,
     "Cleaning" to Icons.Default.CleaningServices,
@@ -63,7 +61,6 @@ val iconMap = mapOf(
     "Night" to Icons.Default.DarkMode,
     "Weekend" to Icons.Default.Weekend,
     "Do Not Disturb" to Icons.Default.DoNotDisturb,
-    // FIX: Updated to AutoMirrored
     "Silent" to Icons.AutoMirrored.Filled.VolumeOff,
     "Vibrate" to Icons.Default.Vibration,
     "Emergency" to Icons.Default.Emergency,

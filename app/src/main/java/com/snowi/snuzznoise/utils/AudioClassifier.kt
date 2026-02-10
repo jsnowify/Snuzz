@@ -49,16 +49,14 @@ class AudioClassifier(context: Context) {
     fun classify(rawAudioBuffer: FloatArray): String {
         if (interpreter == null) return "Unknown"
         try {
-            // 1. Prepare Input (Pad/Trim to 15600)
+
             val inputBuffer = FloatArray(EXPECTED_INPUT_LENGTH)
             val lengthToCopy = minOf(rawAudioBuffer.size, EXPECTED_INPUT_LENGTH)
             System.arraycopy(rawAudioBuffer, 0, inputBuffer, 0, lengthToCopy)
 
-            // 2. Run AI
             val outputBuffer = Array(1) { FloatArray(521) }
             interpreter?.run(inputBuffer, outputBuffer)
 
-            // 3. Find Top Score
             val predictions = outputBuffer[0]
             var maxIndex = -1
             var maxScore = 0f

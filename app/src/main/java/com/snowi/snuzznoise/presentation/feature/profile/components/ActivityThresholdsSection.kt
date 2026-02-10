@@ -10,7 +10,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -23,15 +22,6 @@ fun ActivityThresholdsSection(
     onAddClick: () -> Unit,
     onProfileClick: (ActivityProfile) -> Unit
 ) {
-    val configuration = LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp.dp
-
-    val titleStyle = if (screenWidth < 360.dp) {
-        MaterialTheme.typography.titleSmall
-    } else {
-        MaterialTheme.typography.titleMedium
-    }
-
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -40,7 +30,7 @@ fun ActivityThresholdsSection(
         ) {
             Text(
                 text = "Activity Thresholds",
-                style = titleStyle,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(bottom = 8.dp)
@@ -62,7 +52,7 @@ fun ActivityThresholdsSection(
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
         ) {
             if (isLoading) {
                 Box(
@@ -95,7 +85,7 @@ fun ActivityThresholdsSection(
                                 HorizontalDivider(
                                     modifier = Modifier.padding(horizontal = 16.dp),
                                     thickness = 0.5.dp,
-                                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
+                                    color = MaterialTheme.colorScheme.outlineVariant
                                 )
                             }
                         }
@@ -108,28 +98,22 @@ fun ActivityThresholdsSection(
 
 @Composable
 fun ActivityProfileItem(profile: ActivityProfile, onClick: () -> Unit) {
-    val configuration = LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp.dp
-
-    val (iconSize, padding) = when {
-        screenWidth < 360.dp -> 32.dp to 12.dp
-        else -> 40.dp to 16.dp
-    }
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(horizontal = padding, vertical = 12.dp),
+            .padding(horizontal = 16.dp, vertical = 12.dp), // Standard padding
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             imageVector = profile.getIcon(),
             contentDescription = profile.name,
-            modifier = Modifier.size(iconSize),
+            modifier = Modifier.size(32.dp), // Standard icon size
             tint = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.width(16.dp))
+
+        // This Column takes all available middle space
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = profile.name,
@@ -144,11 +128,14 @@ fun ActivityProfileItem(profile: ActivityProfile, onClick: () -> Unit) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
+
+        Spacer(modifier = Modifier.width(8.dp))
+
         Icon(
             imageVector = Icons.Default.ChevronRight,
             contentDescription = "Edit",
             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier.size(24.dp)
         )
     }
 }

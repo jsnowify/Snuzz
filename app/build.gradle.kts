@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.google.firebase.crashlytics)
 }
+
 android {
     namespace = "com.snowi.snuzznoise"
     compileSdk = 36
@@ -75,9 +76,15 @@ dependencies {
     }
     implementation("org.apache.commons:commons-math3:3.6.1")
 
+    // --- GOOGLE SIGN-IN (CREDENTIAL MANAGER) ---
+    // Added for Avatar Click Sign-In Feature
+    implementation("androidx.credentials:credentials:1.3.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+    implementation("io.coil-kt:coil-compose:2.6.0")
     // --- HILT (STABLE 2.51.1) ---
-    // This version supports your newer Kotlin plugin
     implementation("com.google.dagger:hilt-android:2.51.1")
+    implementation(libs.googleid)
     ksp("com.google.dagger:hilt-compiler:2.51.1")
     implementation(libs.androidx.hilt.navigation.compose)
 
@@ -110,8 +117,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 }
 
-// --- ADD THIS BLOCK AT THE BOTTOM OF THE FILE ---
-// This acts as a "Bouncer" to block the duplicate hamcrest library
+// --- DUPLICATE DEPENDENCY FIX ---
 configurations.all {
     exclude(group = "org.hamcrest", module = "hamcrest-core")
 }

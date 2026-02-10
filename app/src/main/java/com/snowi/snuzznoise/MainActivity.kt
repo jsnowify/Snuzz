@@ -1,13 +1,14 @@
 package com.snowi.snuzznoise
 
 import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels // Import this
+import androidx.activity.viewModels
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.*
@@ -24,7 +25,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen // Import this
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -42,6 +43,8 @@ import com.snowi.snuzznoise.presentation.navigation.Screen
 import com.snowi.snuzznoise.presentation.theme.SnuzzNoiseTheme
 import com.snowi.snuzznoise.utils.SoundPlayer
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.tasks.await
+import java.security.MessageDigest
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -50,25 +53,54 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var auth: FirebaseAuth
 
-    // Initialize ViewModel here to access it before setContent
     private val mainViewModel: MainViewModel by viewModels()
 
     @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-        // 1. Install Splash Screen (Must be before super.onCreate)
         val splashScreen = installSplashScreen()
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         SoundPlayer.init(this)
 
-        // 2. Keep the splash screen visible until the theme is fully loaded
+        // =========================================================================
+        // 🕵️ SPY CODE v2: FIND BOTH KEYS (SHA-1 AND SHA-256)
+        // 1. Run App on Phone.
+        // 2. Filter Logcat for "MY_REAL_KEYS".
+        // 3. Add BOTH keys to Firebase Console.
+        // =========================================================================
+        try {
+            val info = packageManager.getPackageInfo(
+                packageName,
+                PackageManager.GET_SIGNATURES
+            )
+            for (signature in info.signatures!!) {
+                // Get SHA-1
+                val md = MessageDigest.getInstance("SHA-1")
+                md.update(signature.toByteArray())
+                val digest = md.digest()
+                val hexString = StringBuilder()
+                for (b in digest) { hexString.append(String.format("%02X:", b)) }
+                Log.e("17:D0:52:63:63:8F:3C:D9:2C:0D:43:4E:A3:84:71:BB:6F:2D:0D:FA", "SHA-1:   ${hexString.toString().dropLast(1)}")
+
+                // Get SHA-256 (REQUIRED for new Sign In)
+                val md256 = MessageDigest.getInstance("SHA-256")
+                md256.update(signature.toByteArray())
+                val digest256 = md256.digest()
+                val hexString256 = StringBuilder()
+                for (b in digest256) { hexString256.append(String.format("%02X:", b)) }
+                Log.e("F5:0C:6E:72:BF:13:DD:03:1A:AB:10:58:F7:A1:3E:B0:CB:7A:F5:DB:FA:07:8D:40:47:B6:F9:80:5D:47:78:DC", "SHA-256: ${hexString256.toString().dropLast(1)}")
+            }
+        } catch (e: Exception) {
+            Log.e("MY_REAL_KEYS", "Error getting keys", e)
+        }
+        // =========================================================================
+
         splashScreen.setKeepOnScreenCondition {
             mainViewModel.isLoading.value
         }
 
         setContent {
-            // 3. Observe the current theme (it will be ready when splash screen goes away)
             val appTheme by mainViewModel.currentTheme.collectAsState()
 
             SnuzzNoiseTheme(appTheme = appTheme) {
@@ -84,7 +116,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 LaunchedEffect(Unit) {
-                    signInAnonymously()
+                    ensureUserSignedIn()
                 }
 
                 Surface(
@@ -97,18 +129,18 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun signInAnonymously() {
+    // ✅ FIX: Make this a suspend function and use await() for proper async handling
+    private suspend fun ensureUserSignedIn() {
         if (auth.currentUser == null) {
-            auth.signInAnonymously()
-                .addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-                        Log.d("MainActivity", "signInAnonymously:success - UID: ${auth.currentUser?.uid}")
-                    } else {
-                        Log.w("MainActivity", "signInAnonymously:failure", task.exception)
-                    }
-                }
+            Log.d("MainActivity", "No user found, signing in anonymously...")
+            try {
+                auth.signInAnonymously().await()
+                Log.d("MainActivity", "✅ Anonymous sign-in success - UID: ${auth.currentUser?.uid}")
+            } catch (e: Exception) {
+                Log.e("MainActivity", "❌ Anonymous sign-in failure", e)
+            }
         } else {
-            Log.d("MainActivity", "User already signed in. UID: ${auth.currentUser?.uid}")
+            Log.d("MainActivity", "User already exists. UID: ${auth.currentUser?.uid}, isAnonymous: ${auth.currentUser?.isAnonymous}")
         }
     }
 

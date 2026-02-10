@@ -68,7 +68,7 @@ private val DarkSageColors = darkColorScheme(
     onSurfaceVariant = SageOnDarkSurface,
     outline = SageOutlineDark,
 
-    error = Color(0xFFCF6679),
+    error = Color(0xFFF08787),
     onError = SageOnDark // Fixed error text color
 )
 

@@ -4,6 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -22,7 +25,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditProfileDialog(
     profile: ActivityProfile?,
@@ -35,6 +37,7 @@ fun AddEditProfileDialog(
     var selectedIconName by remember { mutableStateOf(profile?.iconName ?: "Meeting") }
     var showDeleteConfirmDialog by remember { mutableStateOf(false) }
 
+    // Logic: Dialog should not exceed 90% height or 500dp width
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
     val maxDialogHeight = (screenHeight * 0.9f)
@@ -48,9 +51,8 @@ fun AddEditProfileDialog(
     } else {
         AlertDialog(
             onDismissRequest = onDismiss,
-            containerColor = MaterialTheme.colorScheme.surface,
-            titleContentColor = MaterialTheme.colorScheme.onSurface,
-            textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.widthIn(max = 500.dp), // Keeps it nice on tablets
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             title = {
                 Text(
                     text = if (profile == null) "Add New Profile" else "Edit Profile",
@@ -138,8 +140,7 @@ fun AddEditProfileDialog(
             confirmButton = {
                 Button(
                     onClick = { onSave(name, threshold.toInt(), selectedIconName) },
-                    enabled = name.isNotBlank(),
-                    modifier = Modifier.padding(end = 8.dp)
+                    enabled = name.isNotBlank()
                 ) {
                     Text("Save")
                 }
@@ -169,54 +170,42 @@ fun IconPicker(
     selectedIconName: String,
     onIconSelected: (String) -> Unit
 ) {
-    val configuration = LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp.dp
-
-    val itemSize = 48.dp
-    val spacing = 8.dp
-    val availableWidth = (screenWidth - 80.dp)
-    val itemWidthPx = itemSize.value + spacing.value
-    val columns = (availableWidth.value / itemWidthPx).toInt().coerceAtLeast(4)
-
+    // LazyVerticalGrid handles columns automatically based on size
+    // Adaptive(48.dp) means: fit as many 48dp items as possible
     val iconList = icons.entries.toList()
-    val rows = iconList.chunked(columns)
 
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(spacing)
-    ) {
-        rows.forEach { rowItems ->
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start
-            ) {
-                rowItems.forEach { (name, icon) ->
-                    val isSelected = name == selectedIconName
-                    Box(
-                        modifier = Modifier
-                            .padding(end = spacing)
-                            .size(itemSize)
-                            .clip(RoundedCornerShape(12.dp))
-                            .clickable { onIconSelected(name) }
-                            .background(
-                                if (isSelected) MaterialTheme.colorScheme.primaryContainer
-                                else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-                            )
-                            .border(
-                                width = if (isSelected) 1.dp else 0.dp,
-                                color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
-                                shape = RoundedCornerShape(12.dp)
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = icon,
-                            contentDescription = name,
-                            modifier = Modifier.size(24.dp),
-                            tint = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer
-                            else MaterialTheme.colorScheme.onSurfaceVariant
+    Box(modifier = Modifier.height(200.dp)) { // Fixed height scrollable area
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(minSize = 48.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(iconList) { (name, icon) ->
+                val isSelected = name == selectedIconName
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .clickable { onIconSelected(name) }
+                        .background(
+                            if (isSelected) MaterialTheme.colorScheme.primaryContainer
+                            else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
                         )
-                    }
+                        .border(
+                            width = if (isSelected) 1.dp else 0.dp,
+                            color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                            shape = RoundedCornerShape(12.dp)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = name,
+                        modifier = Modifier.size(24.dp),
+                        tint = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer
+                        else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
         }
@@ -231,40 +220,23 @@ fun DeleteConfirmationDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        containerColor = MaterialTheme.colorScheme.surface,
-        iconContentColor = MaterialTheme.colorScheme.error,
         icon = {
             Icon(
                 Icons.Default.DeleteForever,
-                contentDescription = "Delete Icon",
-                modifier = Modifier.size(36.dp)
+                contentDescription = "Delete",
+                modifier = Modifier.size(32.dp)
             )
         },
-        title = {
-            Text(
-                text = "Delete Profile?",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-        },
-        text = {
-            Text(
-                text = "Are you sure you want to delete the \"$profileName\" profile? This action cannot be undone.",
-                textAlign = TextAlign.Center
-            )
-        },
+        title = { Text("Delete Profile?") },
+        text = { Text("Permanently delete \"$profileName\"?") },
         confirmButton = {
             Button(
                 onClick = onConfirm,
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-            ) {
-                Text("Delete")
-            }
+            ) { Text("Delete") }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
+            TextButton(onClick = onDismiss) { Text("Cancel") }
         }
     )
 }
